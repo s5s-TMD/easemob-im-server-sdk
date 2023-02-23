@@ -10,6 +10,19 @@ type registerUsersResp struct {
 	Entities []*Entity `json:"entities"`
 }
 
+type getUserTokenReq struct {
+	GrantType      string `json:"grant_type"`
+	Username       string `json:"username"`
+	AutoCreateUser string `json:"autoCreateUser"`
+	Ttl            int64  `json:"ttl"`
+}
+
+type getUserTokenResp struct {
+	AccessToken string  `json:"access_token"`
+	ExpiresIn   int64   `json:"expires_in"`
+	User        *Entity `json:"user"`
+}
+
 type getResp struct {
 	Entities []map[string]interface{} `json:"entities"`
 }

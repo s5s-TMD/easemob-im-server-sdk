@@ -5,6 +5,7 @@ import (
 	"github.com/dobyte/easemob-im-server-sdk/chatroom"
 	"github.com/dobyte/easemob-im-server-sdk/group"
 	"github.com/dobyte/easemob-im-server-sdk/user"
+	"os"
 	"testing"
 )
 
@@ -23,9 +24,9 @@ const (
 func init() {
 	sdk = im.NewIM(&im.Options{
 		Host:         "a1.easemob.com",
-		AppKey:       "",
-		ClientID:     "",
-		ClientSecret: "",
+		AppKey:       os.Getenv("im_app_key"),
+		ClientID:     os.Getenv("im_client_id"),
+		ClientSecret: os.Getenv("im_client_secret"),
 	})
 }
 
@@ -48,6 +49,15 @@ func TestIM_User_Register(t *testing.T) {
 
 func TestIM_User_Get(t *testing.T) {
 	entity, err := sdk.User().GetUser(defaultUsername1)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	t.Logf("%+v", entity)
+}
+
+func TestIM_User_GetToken(t *testing.T) {
+	entity, err := sdk.User().GetUserToken(defaultUsername1)
 	if err != nil {
 		t.Fatal(err)
 	}

@@ -14,6 +14,7 @@ import (
 const (
 	registerUsersUri                      = "/users"
 	getUserUri                            = "/users/%s"
+	getUserTokenUri                       = "/token"
 	fetchUsersUri                         = "/users"
 	deleteUserUri                         = "/users/%s"
 	deleteUsersUri                        = "/users?limit=%d"
@@ -63,6 +64,12 @@ type API interface {
 	// 点击查看详细文档:
 	// https://docs-im.easemob.com/ccim/rest/accountsystem#获取单个用户的详情
 	GetUser(username string) (*Entity, error)
+
+	// GetUserToken 获取单个用户token
+	// 获取单个应用用户的详细信息接口。
+	// 点击查看详细文档:
+	// https://docs-im.easemob.com/ccim/rest/accountsystem#获取单个用户的详情
+	GetUserToken(username string) (*getUserTokenResp, error)
 
 	// FetchUsers 批量获取用户详情
 	// 该接口查询多个用户的信息列表，按照用户创建时间顺序返回。你可以指定要查询的用户数量（limit）。
@@ -322,6 +329,20 @@ func (a *api) GetUser(username string) (*Entity, error) {
 	}
 
 	return a.toEntity(resp.Entities[0])
+}
+
+// GetUser 获取单个用户
+func (a *api) GetUserToken(username string) (*getUserTokenResp, error) {
+	data := &getUserTokenReq{
+		GrantType: "inherit",
+		Username:  username,
+	}
+	resp := &getUserTokenResp{}
+	if err := a.client.Post(getUserTokenUri, data, resp); err != nil {
+		return nil, err
+	}
+
+	return resp, nil
 }
 
 // FetchUsers 批量获取用户详情
