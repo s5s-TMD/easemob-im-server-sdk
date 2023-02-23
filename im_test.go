@@ -15,6 +15,7 @@ const (
 	defaultChatroomID  = "188688613048322"
 	defaultUsername1   = "test1"
 	defaultUsername2   = "test2"
+	defaultUsername3   = "test3"
 	defaultOldPassword = "123456"
 	defaultNewPassword = "456123"
 	defaultTemplate    = "test"
@@ -56,8 +57,17 @@ func TestIM_User_Get(t *testing.T) {
 	t.Logf("%+v", entity)
 }
 
-func TestIM_User_GetToken(t *testing.T) {
-	entity, err := sdk.User().GetUserToken(defaultUsername1)
+func TestIM_User_LoginByPassword(t *testing.T) {
+	entity, err := sdk.User().LoginUserByPassword(defaultUsername1, defaultOldPassword)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	t.Logf("%+v", entity)
+}
+
+func TestIM_User_RegisterUserAndLogin(t *testing.T) {
+	entity, err := sdk.User().RegisterUserAndLogin(defaultUsername3)
 	if err != nil {
 		t.Fatal(err)
 	}

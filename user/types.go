@@ -1,5 +1,10 @@
 package user
 
+const (
+	Password = "password"
+	Inherit  = "inherit"
+)
+
 type User struct {
 	Username string `json:"username"` // （必填）用户 ID，长度不可超过 64 个字节长度。
 	Password string `json:"password"` // （必填）用户的登录密码，长度不可超过 64 个字符。
@@ -13,14 +18,21 @@ type registerUsersResp struct {
 type getUserTokenReq struct {
 	GrantType      string `json:"grant_type"`
 	Username       string `json:"username"`
-	AutoCreateUser string `json:"autoCreateUser"`
+	AutoCreateUser bool   `json:"autoCreateUser"`
 	Ttl            int64  `json:"ttl"`
 }
 
-type getUserTokenResp struct {
+type getTokenResp struct {
 	AccessToken string  `json:"access_token"`
 	ExpiresIn   int64   `json:"expires_in"`
 	User        *Entity `json:"user"`
+}
+
+type loginUserByPasswordReq struct {
+	GrantType string `json:"grant_type"`
+	Username  string `json:"username"`
+	Password  string `json:"password"`
+	Ttl       int64  `json:"ttl"`
 }
 
 type getResp struct {
