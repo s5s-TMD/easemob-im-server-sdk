@@ -29,6 +29,7 @@ type Options struct {
 	ClientID     string
 	ClientSecret string
 	TokenTTL     int64
+	BearToken    string
 }
 
 type im struct {
@@ -67,6 +68,7 @@ func NewIM(opts *Options) IM {
 			AppKey:       opts.AppKey,
 			ClientID:     opts.ClientID,
 			ClientSecret: opts.ClientSecret,
+			BearToken:    opts.BearToken,
 			TTL:          opts.TokenTTL,
 		}),
 	}

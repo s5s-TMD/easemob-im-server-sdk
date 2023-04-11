@@ -1,6 +1,8 @@
 package core
 
-import "golang.org/x/sync/singleflight"
+import (
+	"golang.org/x/sync/singleflight"
+)
 
 const (
 	defaultGrantType = "client_credentials"
@@ -38,7 +40,7 @@ func NewAuthClient(opts *Options) Client {
 			}
 			resp := &getTokenResp{}
 
-			if req.TTL <= 0 {
+			if req.TTL < 0 {
 				req.TTL = defaultTokenTTL
 			}
 
@@ -47,7 +49,6 @@ func NewAuthClient(opts *Options) Client {
 			}
 
 			c.client.SetBearerToken(resp.AccessToken)
-
 			return nil, nil
 		})
 

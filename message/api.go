@@ -15,6 +15,7 @@ const (
 )
 
 type API interface {
+	Send(msg *Message) (map[string]string, error)
 }
 
 type api struct {
@@ -31,51 +32,17 @@ func (a *api) Send(msg *Message) (map[string]string, error) {
 		return nil, msg.err
 	}
 
-	var (
-		buf []byte
-		err error
-	)
-	switch msg.msgType {
-	case txt:
-		buf, err = toTxtBody(msg.msgBody.(*MsgTxt))
-	case image:
-		buf, err = toImageBody(a.client.BaseUrl(), msg.msgBody.(*MsgImage))
-	case audio:
-		buf, err = toAudioBody(a.client.BaseUrl(), msg.msgBody.(*MsgAudio))
-	case video:
-		buf, err = toVideoBody(a.client.BaseUrl(), msg.msgBody.(*MsgVideo))
-	case file:
-		buf, err = toFileBody(a.client.BaseUrl(), msg.msgBody.(*MsgFile))
-	case location:
-		buf, err = toLocationBody(msg.msgBody.(*MsgLocation))
-	case cmd:
-		buf, err = toCMDBody(msg.msgBody.(*MsgCMD))
-	case custom:
-		buf, err = toCustomBody(msg.msgBody.(*MsgCustom))
-	}
-	if err != nil {
-		return nil, err
-	}
-
 	req := &sendReq{
 		From:       msg.sender,
 		To:         msg.receivers,
 		Type:       msg.msgType,
-		Body:       string(buf),
+		Body:       msg.msgBody,
 		SyncDevice: msg.syncDevice,
+		Ext:        msg.ext,
 	}
-	resp := &sendResp{}
 
 	if msg.onlyOnline {
 		req.RouteType = "ROUTE_ONLINE"
-	}
-
-	if msg.ext != nil && !reflect.ValueOf(msg.ext).IsNil() {
-		buf, err := json.Marshal(msg.ext)
-		if err != nil {
-			return nil, err
-		}
-		req.Ext = string(buf)
 	}
 
 	var uri string
@@ -88,7 +55,8 @@ func (a *api) Send(msg *Message) (map[string]string, error) {
 		uri = sendChatroomMsgUri
 	}
 
-	if err = a.client.Post(uri, req, resp); err != nil {
+	resp := &sendResp{}
+	if err := a.client.Post(uri, req, resp); err != nil {
 		return nil, err
 	}
 

@@ -4,6 +4,7 @@ import (
 	"github.com/dobyte/easemob-im-server-sdk"
 	"github.com/dobyte/easemob-im-server-sdk/chatroom"
 	"github.com/dobyte/easemob-im-server-sdk/group"
+	"github.com/dobyte/easemob-im-server-sdk/message"
 	"github.com/dobyte/easemob-im-server-sdk/user"
 	"os"
 	"testing"
@@ -28,7 +29,10 @@ func init() {
 		AppKey:       os.Getenv("im_app_key"),
 		ClientID:     os.Getenv("im_client_id"),
 		ClientSecret: os.Getenv("im_client_secret"),
+		BearToken:    os.Getenv("im_app_token"),
+		TokenTTL:     0, // 永久有效
 	})
+	//println("init sdk done.BearToken:" + os.Getenv("im_app_token"))
 }
 
 func TestIM_User_Register(t *testing.T) {
@@ -1060,4 +1064,42 @@ func TestIm_Group_RemoveWhitelists(t *testing.T) {
 	for _, ret := range rets {
 		t.Logf("%+v", ret)
 	}
+}
+
+func TestIM_User_SendSingleMessage(t *testing.T) {
+	msg := message.NewMessage(message.TargetUser)
+	//msg.SetOnlyOnline()
+	msg.SetSender("test1")
+	msg.AddReceivers("test2")
+	//msg.SetSyncDevice()
+	msg.SetBody(&message.MsgTxt{Msg: "hello from test1"})
+	rs, err := sdk.Message().Send(msg)
+	if err != nil {
+		t.Logf("err:%v", err.Error())
+		return
+	}
+
+	t.Logf("%+v", rs)
+}
+
+func TestIM_User_SendCustomerMessage(t *testing.T) {
+	msg := message.NewMessage(message.TargetUser)
+	//msg.SetOnlyOnline()
+	msg.SetSender("test1")
+	msg.AddReceivers("test2")
+	//msg.SetSyncDevice()
+	customMap := make(map[string]string, 0)
+	customMap["id1"] = "ida"
+	customMap["id2"] = "ida"
+	msg.SetBody(&message.MsgCustom{
+		CustomEvent: "user_cony_apply",
+		CustomExts:  customMap,
+	})
+	rs, err := sdk.Message().Send(msg)
+	if err != nil {
+		t.Logf("err:%v", err.Error())
+		return
+	}
+
+	t.Logf("%+v", rs)
 }

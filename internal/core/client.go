@@ -15,6 +15,7 @@ type Options struct {
 	ClientID            string
 	ClientSecret        string
 	TTL                 int64
+	BearToken           string
 	unauthorizedHandler func(c *client) error
 }
 
@@ -54,6 +55,9 @@ func NewClient(opts *Options) *client {
 	c.client.SetContentType(http.ContentTypeJson)
 	c.client.SetHeader("Accept", http.ContentTypeJson)
 	c.client.SetBaseUrl(c.baseUrl)
+	if opts.BearToken != "" {
+		c.client.SetBearerToken(opts.BearToken)
+	}
 
 	return c
 }
@@ -100,13 +104,13 @@ func (c *client) request(method string, uri string, data interface{}, resp inter
 		if err != nil {
 			return err
 		}
-
+		//println(fmt.Sprintf("uri:%s, res code: %d", uri, res.Response.StatusCode))
 		if res.Response.StatusCode == nethttp.StatusOK {
 			if resp == nil || reflect.ValueOf(resp).IsNil() {
 				return nil
 			}
 
-			return res.Scan(resp)
+			return res.ScanBody(resp)
 		}
 
 		if res.Response.StatusCode == nethttp.StatusUnauthorized {
@@ -119,10 +123,11 @@ func (c *client) request(method string, uri string, data interface{}, resp inter
 		}
 
 		errResp := &errorResp{}
-		if err = res.Scan(errResp); err != nil {
+		if err = res.ScanBody(errResp); err != nil {
 			return err
 		}
 
+		//println(fmt.Sprintf("uri:%s, error: %+v", uri, errResp))
 		return errors.New(errResp.ErrorDescription)
 	}
 

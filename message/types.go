@@ -3,13 +3,13 @@ package message
 type MsgType string
 
 type sendReq struct {
-	From       string   `json:"from"`
-	To         []string `json:"to"`
-	Type       string   `json:"type"`
-	Body       string   `json:"body"`
-	SyncDevice bool     `json:"sync_device,omitempty"`
-	RouteType  string   `json:"routetype,omitempty"`
-	Ext        string   `json:"ext,omitempty"`
+	From       string      `json:"from"`
+	To         []string    `json:"to"`
+	Type       string      `json:"type"`
+	Body       interface{} `json:"body"`
+	SyncDevice bool        `json:"sync_device,omitempty"`
+	RouteType  string      `json:"routetype,omitempty"`
+	Ext        interface{} `json:"ext,omitempty"`
 }
 
 type sendResp struct {

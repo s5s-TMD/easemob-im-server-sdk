@@ -618,8 +618,8 @@ func (a *api) SetMetadata(username string, metadata map[string]string) error {
 		query.Add(k, v)
 	}
 
-	a.client.Use(func(r *http.Request) (*http.Response, error) {
-		r.Request.Header.Set(http.HeaderContentType, http.ContentTypeFormUrlEncoded)
+	a.client.Use(func(r http.Request) (*http.Response, error) {
+		r.Request().Header.Set(http.HeaderContentType, http.ContentTypeFormUrlEncoded)
 		return r.Next()
 	})
 
